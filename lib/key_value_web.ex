@@ -16,7 +16,7 @@ defmodule KeyValue.Web do
     {status, body} =
       case conn.body_params do
         %{"value" => value} ->
-          KeyValue.Server.put(key, value)
+          KeyValue.Cache.put(key, value)
           {200, Poison.encode!(%{key: key, value: value, status: "Ok"})}
 
         _ ->
@@ -29,7 +29,7 @@ defmodule KeyValue.Web do
   end
 
   get "/entry/:key" do
-    value = KeyValue.Server.get(key)
+    value = KeyValue.Cache.get(key)
 
     conn
     |> put_resp_content_type("text/json")

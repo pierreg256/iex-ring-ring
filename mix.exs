@@ -22,6 +22,8 @@ defmodule KeyValue.MixProject do
   # Run "mix help deps" to learn about dependenciers.
   defp deps do
     [
+      {:libcluster, "~> 3.3"},
+      {:swarm, "~> 3.0"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 3.1"}
       # {:dep_from_hexpm, "~> 0.3.0"},
