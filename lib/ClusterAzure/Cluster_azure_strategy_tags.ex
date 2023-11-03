@@ -6,7 +6,7 @@ defmodule ClusterAzure.Strategy.Tags do
   All instances must be started with the same app name and have security groups
   configured to allow inter-node communication.
 
-      config :libcluster,
+      config: libcluster,
         topologies: [
           tags_example: [
             strategy: #{__MODULE__},
@@ -36,6 +36,7 @@ defmodule ClusterAzure.Strategy.Tags do
 
   @default_polling_interval 5_000
 
+  @impl Cluster.Strategy
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)
   end
@@ -96,7 +97,9 @@ defmodule ClusterAzure.Strategy.Tags do
 
         {:ok,
          response
-         |> Enum.map(fn x -> String.to_atom(x["name"] <> "@" <> dns_suffix) end)
+         |> Enum.map(fn x ->
+           String.to_atom(app_prefix <> "@" <> x["name"] <> "." <> dns_suffix)
+         end)
          |> MapSet.new()}
 
       tag_name == nil ->
