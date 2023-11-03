@@ -48,6 +48,19 @@ defmodule ClusterAzure.Strategy.Tags do
     {:ok, load(state)}
   end
 
+  @impl GenServer
+  def handle_info(:timeout, state) do
+    handle_info(:load, state)
+  end
+
+  def handle_info(:load, %State{} = state) do
+    {:noreply, load(state)}
+  end
+
+  def handle_info(_, state) do
+    {:noreply, state}
+  end
+
   def join(node, state) do
     # Implement the join function here
     IO.puts("Joining #{inspect(node)}")
