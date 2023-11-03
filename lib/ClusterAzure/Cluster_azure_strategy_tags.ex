@@ -81,7 +81,10 @@ defmodule ClusterAzure.Strategy.Tags do
           }
         ]" |> Poison.decode!()
 
-        {:ok, response |> Enum.map(fn x -> x["name"] <> "@" <> dns_suffix end) |> MapSet.new()}
+        {:ok,
+         response
+         |> Enum.map(fn x -> String.to_atom(x["name"] <> "@" <> dns_suffix) end)
+         |> MapSet.new()}
 
       tag_name == nil ->
         warn(topology, "azure tags strategy is selected, but :tagname is not configured!")
