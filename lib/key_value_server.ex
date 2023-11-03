@@ -8,7 +8,11 @@ defmodule KeyValue.Server do
 
   def init([server_id]) do
     IO.puts("KV Server init #{inspect(server_id)}")
-    {:ok, %{shard: server_id, data: %{}}}
+    {:ok, %{shard: server_id, data: %{}, size: 0}}
+  end
+
+  def handle_call({:get, :size}, _from, state) do
+    {:reply, state.size, state}
   end
 
   def handle_call({:get, key}, _from, state) do
@@ -25,12 +29,12 @@ defmodule KeyValue.Server do
   #
   def handle_call({:swarm, :begin_handoff}, _from, state) do
     IO.puts("j'envoie mon état avant de mourir #{inspect(state)}")
-    {:reply, {:resume, state}, %{state | shard: "coucou"}}
+    {:reply, {:resume, state}, state}
   end
 
   def handle_cast({:put, key, value}, state) do
     new_data = Map.put(state.data, key, value)
-    {:noreply, %{state | data: new_data}}
+    {:noreply, %{state | data: new_data, size: Kernel.map_size(new_data)}}
   end
 
   # called after the process has been restarted on its new node,
@@ -40,7 +44,6 @@ defmodule KeyValue.Server do
   # so make sure to design your processes around this caveat if you
   # wish to hand off state like this.
   def handle_cast({:swarm, :end_handoff, state}, _empty) do
-    IO.puts("je recois un nouvel etat #{inspect(state)} ")
     {:noreply, state}
   end
 

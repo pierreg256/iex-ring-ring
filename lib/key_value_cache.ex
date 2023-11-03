@@ -37,19 +37,11 @@ defmodule KeyValue.Cache do
     end
   end
 
-  # def server_shard(key) do
-  #   case start_child(key) do
-  #     {:ok, _server} ->
-  #       shard_number(key)
+  def size() do
+    Swarm.registered() |> Enum.map(&Swarm.whereis_name(&1))
 
-  #     {:error, {:already_started, _pid}} ->
-  #       shard_number(key)
-  #   end
-  # end
-
-  # def child_spec(_arg) do
-  #   %{id: __MODULE__, start: {__MODULE__, :start_link, []}, type: :supervisor}
-  # end
+    # |> Enum.sum()
+  end
 
   def register(name) do
     IO.puts("Registering KV Server #{inspect(name)}")
@@ -58,5 +50,7 @@ defmodule KeyValue.Cache do
 
   def shard_number(key) do
     :erlang.phash2(key, @shards)
+    |> Integer.to_string()
+    |> String.pad_leading(3, "0")
   end
 end

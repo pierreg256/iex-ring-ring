@@ -11,4 +11,17 @@ defmodule KeyValue.System do
       strategy: :one_for_one
     )
   end
+
+  def load do
+    for _ <- 1..1000 do
+      key = :crypto.strong_rand_bytes(8) |> Base.encode64()
+      value = :crypto.strong_rand_bytes(8) |> Base.encode64()
+      KeyValue.Cache.put(key, value)
+    end
+  end
+
+  def status do
+    Swarm.registered()
+    |> Enum.map(fn {name, _pid} -> {name, Swarm.whereis_name(name)} end)
+  end
 end
